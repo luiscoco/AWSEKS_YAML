@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vehiclesimulator-deployment
+  labels:
+    app: vehiclesimulator
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vehiclesimulator
+  template:
+    metadata:
+      labels:
+        app: vehiclesimulator
+    spec:
+      containers:
+        - name: vehiclesimulator
+          image: 719220092744.dkr.ecr.eu-west-3.amazonaws.com/vehiclesimulator-repo:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: DOTNET_ENVIRONMENT
+              value: Development
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vehiclesimulator-service
+  namespace: dev
+spec:
+  selector:
+    app: vehiclesimulator
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
